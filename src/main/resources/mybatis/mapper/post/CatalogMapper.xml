@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tiantianmeitu.background.mapper.post.CatalogMapper" >
+  <resultMap id="BaseResultMap" type="com.tiantianmeitu.background.bean.post.Catalog" >
+    <id column="catalog_id" property="catalogId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="INTEGER" />
+    <result column="operate_type" property="operateType" jdbcType="CHAR" />
+    <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from catalog
+    where catalog_id = #{catalogId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.tiantianmeitu.background.bean.post.Catalog" >
+    <selectKey resultType="java.lang.Integer" keyProperty="catalogId" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into catalog (`name`, parent_id, order_no, 
+      operate_type, operate_time)
+    values (#{name,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, #{orderNo,jdbcType=INTEGER}, 
+      #{operateType,jdbcType=CHAR}, #{operateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.tiantianmeitu.background.bean.post.Catalog" >
+    update catalog
+    set `name` = #{name,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=INTEGER},
+      order_no = #{orderNo,jdbcType=INTEGER},
+      operate_type = #{operateType,jdbcType=CHAR},
+      operate_time = #{operateTime,jdbcType=TIMESTAMP}
+    where catalog_id = #{catalogId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select catalog_id, `name`, parent_id, order_no, operate_type, operate_time
+    from catalog
+    where catalog_id = #{catalogId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select catalog_id, `name`, parent_id, order_no, operate_type, operate_time
+    from catalog
+  </select>
+</mapper>
