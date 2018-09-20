@@ -5,10 +5,6 @@ import java.io.Serializable;
 public class Image implements Serializable {
     private Integer imageId;
 
-    //sdfsdofjsiodf
-    //sdfsdofjsiodf
-    //sdfsdofjsiodf
-
     private String url;
 
     private static final long serialVersionUID = 1L;
