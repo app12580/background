@@ -30,8 +30,6 @@
     <collection property="imageList" ofType="com.tiantianmeitu.background.bean.post.Image">
       <id column="i_image_id" property="imageId" jdbcType="INTEGER" />
       <result column="i_url" property="url" jdbcType="VARCHAR" />
-      <result column="i_post_id" property="postId" jdbcType="INTEGER" />
-      <result column="i_order_no" property="orderNo" jdbcType="INTEGER" />
     </collection>
     <collection property="keywordList" ofType="com.tiantianmeitu.background.bean.post.Keyword">
       <id column="k_keyword_id" property="keywordId" jdbcType="INTEGER" />
@@ -43,7 +41,7 @@
   </resultMap>
 
   <sql id="imageList">
-    i.image_id as i_image_id, i.url as i_url, i.post_id as i_post_id, i.order_no as i_order_no
+    i.image_id as i_image_id, i.url as i_url
   </sql>
 
   <sql id="keywordList">
@@ -93,12 +91,14 @@
     inner join (
         SELECT
           p.post_id,
-          min(i.order_no) min_order
+          min(rr.order_no) min_order
         FROM post p
-          INNER JOIN image i ON p.post_id = i.post_id
+          INNER JOIN post_image_rel rr on p.post_id = rr.post_id
+          INNER JOIN image i ON i.image_id = rr.image_id
         GROUP BY p.post_id
         ) t1 on p.post_id = t1.post_id
-    inner join image i on i.post_id = p.post_id and i.order_no = t1.min_order
+    INNER JOIN post_image_rel rr on p.post_id = rr.post_id and rr.order_no = t1.min_order
+    inner join image i on i.image_id = rr.image_id
     order by p.operate_time desc
   </select>
 
@@ -106,7 +106,8 @@
     select p.post_id, p.name, p.description, p.catalog_id, p.operate_type, p.operate_time,
     <include refid="imageList"/>, <include refid="keywordList"/>
     from post p
-    left join image i on p.post_id = i.post_id
+    left join post_image_rel rr on rr.post_id = p.post_id
+    left join image i on i.image_id = rr.image_id
     left join post_keyword_rel r on r.post_id = p.post_id
     left join keyword k on k.keyword_id = r.keyword_id
     where p.post_id = #{postId,jdbcType=INTEGER}
