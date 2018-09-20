@@ -16,4 +16,11 @@ public interface CatalogMapper {
     List<Catalog> selectAll();
 
     int updateByPrimaryKey(Catalog record);
+
+    List<Catalog> getFirstCatalogList();
+
+    List<Catalog> getFirstCatalogListWithChild();
+
+    List<Catalog> getChildrenCatalogs(Integer catalogId);
+
 }

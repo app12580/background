@@ -16,4 +16,8 @@ public interface PostMapper {
     List<Post> selectAll();
 
     int updateByPrimaryKey(Post record);
+
+    List<Post> getPostsByCatalogId(Integer catalogId);
+
+    Post selectPostInfoById(Integer postId);
 }

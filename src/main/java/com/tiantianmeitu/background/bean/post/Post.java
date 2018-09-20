@@ -1,7 +1,10 @@
 package com.tiantianmeitu.background.bean.post;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class Post implements Serializable {
     private Integer postId;
@@ -14,7 +17,14 @@ public class Post implements Serializable {
 
     private String operateType;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date operateTime;
+
+    //自定义属性
+    private String previewImgUrl;
+    private List<Image> imageList;
+    private List<Keyword> keywordList;
+
 
     private static final long serialVersionUID = 1L;
 
@@ -64,6 +74,30 @@ public class Post implements Serializable {
 
     public void setOperateTime(Date operateTime) {
         this.operateTime = operateTime;
+    }
+
+    public String getPreviewImgUrl() {
+        return previewImgUrl;
+    }
+
+    public void setPreviewImgUrl(String previewImgUrl) {
+        this.previewImgUrl = previewImgUrl;
+    }
+
+    public List<Image> getImageList() {
+        return imageList;
+    }
+
+    public void setImageList(List<Image> imageList) {
+        this.imageList = imageList;
+    }
+
+    public List<Keyword> getKeywordList() {
+        return keywordList;
+    }
+
+    public void setKeywordList(List<Keyword> keywordList) {
+        this.keywordList = keywordList;
     }
 
     @Override

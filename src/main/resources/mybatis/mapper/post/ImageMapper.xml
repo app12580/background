@@ -4,7 +4,6 @@
   <resultMap id="BaseResultMap" type="com.tiantianmeitu.background.bean.post.Image" >
     <id column="image_id" property="imageId" jdbcType="INTEGER" />
     <result column="url" property="url" jdbcType="VARCHAR" />
-    <result column="post_id" property="postId" jdbcType="INTEGER" />
     <result column="order_no" property="orderNo" jdbcType="INTEGER" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
@@ -39,6 +38,7 @@
   <select id="getImageByPostId" resultMap="BaseResultMap" >
     select image_id, url, post_id, order_no
     from image where post_id = #{postId}
+    order by order_no
   </select>
 
 </mapper>

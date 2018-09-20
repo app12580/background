@@ -9,6 +9,30 @@
     <result column="operate_type" property="operateType" jdbcType="CHAR" />
     <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
   </resultMap>
+
+  <resultMap id="BaseResultMapWithChild" type="com.tiantianmeitu.background.bean.post.Catalog" >
+    <id column="catalog_id" property="catalogId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="INTEGER" />
+    <result column="operate_type" property="operateType" jdbcType="CHAR" />
+    <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
+    <collection property="childrenCatalogs" ofType="com.tiantianmeitu.background.bean.post.Catalog">
+      <id column="c_catalog_id" property="catalogId" jdbcType="INTEGER" />
+      <result column="c_name" property="name" jdbcType="VARCHAR" />
+      <result column="c_parent_id" property="parentId" jdbcType="INTEGER" />
+      <result column="c_order_no" property="orderNo" jdbcType="INTEGER" />
+      <result column="c_operate_type" property="operateType" jdbcType="CHAR" />
+      <result column="c_operate_time" property="operateTime" jdbcType="TIMESTAMP" />
+    </collection>
+  </resultMap>
+
+  <sql id="childrenCatalogs">
+    c.catalog_id as c_catalog_id, c.name as c_name, c.parent_id as c_parent_id, c.order_no as c_order_no,
+    c.operate_type as c_operate_type, c.operate_time as c_operate_time
+  </sql>
+
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from catalog
     where catalog_id = #{catalogId,jdbcType=INTEGER}
@@ -40,4 +64,27 @@
     select catalog_id, `name`, parent_id, order_no, operate_type, operate_time
     from catalog
   </select>
+
+  <select id="getFirstCatalogList" resultMap="BaseResultMap">
+    select catalog_id, `name`, parent_id, order_no, operate_type, operate_time
+    from catalog where parent_id is null and operate_type != 3
+    order by order_no
+  </select>
+
+  <select id="getFirstCatalogListWithChild" resultMap="BaseResultMapWithChild">
+    select p.catalog_id, p.name, p.parent_id, p.order_no, p.operate_type, p.operate_time,
+            <include refid="childrenCatalogs"/>
+    from catalog p
+    inner join catalog c on p.catalog_id = c.parent_id
+    where p.parent_id is null and p.operate_type != 3 and c.operate_type != 3
+    order by p.order_no, c.order_no
+  </select>
+
+  <select id="getChildrenCatalogs" resultMap="BaseResultMap">
+    select catalog_id, `name`, parent_id, order_no, operate_type, operate_time
+    from catalog where parent_id = #{catalogId} and operate_type != 3
+    order by order_no
+  </select>
+
+
 </mapper>
