@@ -1,5 +1,7 @@
 package com.tiantianmeitu.background.bean.post;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -12,6 +14,7 @@ public class Keyword implements Serializable {
 
     private String operateType;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date operateTime;
 
     private static final long serialVersionUID = 1L;

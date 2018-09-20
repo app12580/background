@@ -1,7 +1,10 @@
 package com.tiantianmeitu.background.bean.post;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 public class Catalog implements Serializable {
     private Integer catalogId;
@@ -14,7 +17,11 @@ public class Catalog implements Serializable {
 
     private String operateType;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date operateTime;
+
+    //自定义属性
+    private Set<Catalog> childrenCatalogs;
 
     private static final long serialVersionUID = 1L;
 
@@ -64,6 +71,14 @@ public class Catalog implements Serializable {
 
     public void setOperateTime(Date operateTime) {
         this.operateTime = operateTime;
+    }
+
+    public Set<Catalog> getChildrenCatalogs() {
+        return childrenCatalogs;
+    }
+
+    public void setChildrenCatalogs(Set<Catalog> childrenCatalogs) {
+        this.childrenCatalogs = childrenCatalogs;
     }
 
     @Override

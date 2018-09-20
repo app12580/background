@@ -9,10 +9,6 @@ public class Image implements Serializable {
 
     private String url;
 
-    private Integer postId;
-
-    private Integer orderNo;
-
     private static final long serialVersionUID = 1L;
 
     public Integer getImageId() {
@@ -31,22 +27,6 @@ public class Image implements Serializable {
         this.url = url == null ? null : url.trim();
     }
 
-    public Integer getPostId() {
-        return postId;
-    }
-
-    public void setPostId(Integer postId) {
-        this.postId = postId;
-    }
-
-    public Integer getOrderNo() {
-        return orderNo;
-    }
-
-    public void setOrderNo(Integer orderNo) {
-        this.orderNo = orderNo;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -55,8 +35,6 @@ public class Image implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", imageId=").append(imageId);
         sb.append(", url=").append(url);
-        sb.append(", postId=").append(postId);
-        sb.append(", orderNo=").append(orderNo);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

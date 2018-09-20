@@ -9,10 +9,50 @@
     <result column="operate_type" property="operateType" jdbcType="CHAR" />
     <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
   </resultMap>
+
+  <resultMap id="PostPreview" type="com.tiantianmeitu.background.bean.post.Post" >
+    <id column="post_id" property="postId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="catalog_id" property="catalogId" jdbcType="INTEGER" />
+    <result column="operate_type" property="operateType" jdbcType="CHAR" />
+    <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="preview_img_url" property="previewImgUrl" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="PostInfo" type="com.tiantianmeitu.background.bean.post.Post" >
+    <id column="post_id" property="postId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="catalog_id" property="catalogId" jdbcType="INTEGER" />
+    <result column="operate_type" property="operateType" jdbcType="CHAR" />
+    <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
+    <collection property="imageList" ofType="com.tiantianmeitu.background.bean.post.Image">
+      <id column="i_image_id" property="imageId" jdbcType="INTEGER" />
+      <result column="i_url" property="url" jdbcType="VARCHAR" />
+    </collection>
+    <collection property="keywordList" ofType="com.tiantianmeitu.background.bean.post.Keyword">
+      <id column="k_keyword_id" property="keywordId" jdbcType="INTEGER" />
+      <result column="k_name" property="name" jdbcType="VARCHAR" />
+      <result column="k_order_no" property="orderNo" jdbcType="INTEGER" />
+      <result column="k_operate_type" property="operateType" jdbcType="CHAR" />
+      <result column="k_operate_time" property="operateTime" jdbcType="TIMESTAMP" />
+    </collection>
+  </resultMap>
+
+  <sql id="imageList">
+    i.image_id as i_image_id, i.url as i_url
+  </sql>
+
+  <sql id="keywordList">
+    k.keyword_id as k_keyword_id, k.name as k_name, k.order_no as k_order_no, k.operate_type as k_operate_type, k.operate_time as k_operate_time
+  </sql>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from post
     where post_id = #{postId,jdbcType=INTEGER}
   </delete>
+
   <insert id="insert" parameterType="com.tiantianmeitu.background.bean.post.Post" >
     <selectKey resultType="java.lang.Integer" keyProperty="postId" order="AFTER" >
       SELECT LAST_INSERT_ID()
@@ -22,6 +62,7 @@
     values (#{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{catalogId,jdbcType=INTEGER}, 
       #{operateType,jdbcType=CHAR}, #{operateTime,jdbcType=TIMESTAMP})
   </insert>
+
   <update id="updateByPrimaryKey" parameterType="com.tiantianmeitu.background.bean.post.Post" >
     update post
     set `name` = #{name,jdbcType=VARCHAR},
@@ -31,13 +72,46 @@
       operate_time = #{operateTime,jdbcType=TIMESTAMP}
     where post_id = #{postId,jdbcType=INTEGER}
   </update>
+
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select post_id, `name`, description, catalog_id, operate_type, operate_time
     from post
     where post_id = #{postId,jdbcType=INTEGER}
   </select>
+
   <select id="selectAll" resultMap="BaseResultMap" >
     select post_id, `name`, description, catalog_id, operate_type, operate_time
-    from post
+    from post and operate_type != 3
+    order by operate_time desc
   </select>
+
+  <select id="getPostsByCatalogId" resultMap="PostPreview" >
+    select p.*, i.url as preview_img_url
+    from post p
+    inner join (
+        SELECT
+          p.post_id,
+          min(rr.order_no) min_order
+        FROM post p
+          INNER JOIN post_image_rel rr on p.post_id = rr.post_id
+          INNER JOIN image i ON i.image_id = rr.image_id
+        GROUP BY p.post_id
+        ) t1 on p.post_id = t1.post_id
+    INNER JOIN post_image_rel rr on p.post_id = rr.post_id and rr.order_no = t1.min_order
+    inner join image i on i.image_id = rr.image_id
+    order by p.operate_time desc
+  </select>
+
+  <select id="selectPostInfoById" resultMap="PostInfo" parameterType="java.lang.Integer" >
+    select p.post_id, p.name, p.description, p.catalog_id, p.operate_type, p.operate_time,
+    <include refid="imageList"/>, <include refid="keywordList"/>
+    from post p
+    left join post_image_rel rr on rr.post_id = p.post_id
+    left join image i on i.image_id = rr.image_id
+    left join post_keyword_rel r on r.post_id = p.post_id
+    left join keyword k on k.keyword_id = r.keyword_id
+    where p.post_id = #{postId,jdbcType=INTEGER}
+  </select>
+
+
 </mapper>
